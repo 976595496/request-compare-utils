@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sunline.compare.dao.PositionFlagMapper">
+  <resultMap id="BaseResultMap" type="cn.sunline.compare.entity.PositionFlag">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="position" jdbcType="INTEGER" property="position" />
+    <result column="flag" jdbcType="VARCHAR" property="flag" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, position, flag
+  </sql>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from position_flag
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.sunline.compare.entity.PositionFlag">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into position_flag (position, flag)
+    values (#{position,jdbcType=INTEGER}, #{flag,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.sunline.compare.entity.PositionFlag">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into position_flag
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="position != null">
+        position,
+      </if>
+      <if test="flag != null">
+        flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="position != null">
+        #{position,jdbcType=INTEGER},
+      </if>
+      <if test="flag != null">
+        #{flag,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.sunline.compare.entity.PositionFlag">
+    update position_flag
+    <set>
+      <if test="position != null">
+        position = #{position,jdbcType=INTEGER},
+      </if>
+      <if test="flag != null">
+        flag = #{flag,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.sunline.compare.entity.PositionFlag">
+    update position_flag
+    set position = #{position,jdbcType=INTEGER},
+    flag = #{flag,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <update id="updatePositionByFlag">
+      update position_flag set position = #{position} where flag= #{flag}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from position_flag
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByFlag" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from position_flag
+    where flag = #{flag,jdbcType=INTEGER}
+  </select>
+</mapper>

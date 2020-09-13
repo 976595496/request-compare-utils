@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sunline.compare.dao.PlaybackResultMapper">
+  <resultMap id="BaseResultMap" type="cn.sunline.compare.entity.PlaybackResult">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="trans_name" jdbcType="VARCHAR" property="transName" />
+    <result column="flow_num" jdbcType="VARCHAR" property="flowNum" />
+    <result column="success" jdbcType="TINYINT" property="success" />
+    <result column="new_json" jdbcType="LONGVARCHAR" property="newJson" />
+    <result column="old_json" jdbcType="LONGVARCHAR" property="oldJson" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, trans_name, flow_num, success, new_json, old_json
+  </sql>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from playback_result
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.sunline.compare.entity.PlaybackResult">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into playback_result (trans_name, flow_num, success,
+      new_json, old_json)
+    values (#{transName,jdbcType=VARCHAR}, #{flowNum,jdbcType=VARCHAR}, #{success,jdbcType=TINYINT},
+      #{newJson,jdbcType=LONGVARCHAR}, #{oldJson,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.sunline.compare.entity.PlaybackResult">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into playback_result
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="transName != null">
+        trans_name,
+      </if>
+      <if test="flowNum != null">
+        flow_num,
+      </if>
+      <if test="success != null">
+        success,
+      </if>
+      <if test="newJson != null">
+        new_json,
+      </if>
+      <if test="oldJson != null">
+        old_json,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="transName != null">
+        #{transName,jdbcType=VARCHAR},
+      </if>
+      <if test="flowNum != null">
+        #{flowNum,jdbcType=VARCHAR},
+      </if>
+      <if test="success != null">
+        #{success,jdbcType=TINYINT},
+      </if>
+      <if test="newJson != null">
+        #{newJson,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="oldJson != null">
+        #{oldJson,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <insert id="insertBatch">
+    insert into playback_result (trans_name, flow_num, success,
+      new_json, old_json)
+    values
+    <foreach collection="playbackResults" item="item" index="index" separator="," >
+    (#{item.transName,jdbcType=VARCHAR}, #{item.flowNum,jdbcType=VARCHAR}, #{item.success,jdbcType=TINYINT},
+      #{item.newJson,jdbcType=LONGVARCHAR}, #{item.oldJson,jdbcType=LONGVARCHAR})
+    </foreach>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.sunline.compare.entity.PlaybackResult">
+    update playback_result
+    <set>
+      <if test="transName != null">
+        trans_name = #{transName,jdbcType=VARCHAR},
+      </if>
+      <if test="flowNum != null">
+        flow_num = #{flowNum,jdbcType=VARCHAR},
+      </if>
+      <if test="success != null">
+        success = #{success,jdbcType=TINYINT},
+      </if>
+      <if test="newJson != null">
+        new_json = #{newJson,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="oldJson != null">
+        old_json = #{oldJson,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="cn.sunline.compare.entity.PlaybackResult">
+    update playback_result
+    set trans_name = #{transName,jdbcType=VARCHAR},
+      flow_num = #{flowNum,jdbcType=VARCHAR},
+      success = #{success,jdbcType=TINYINT},
+      new_json = #{newJson,jdbcType=LONGVARCHAR},
+      old_json = #{oldJson,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.sunline.compare.entity.PlaybackResult">
+    update playback_result
+    set trans_name = #{transName,jdbcType=VARCHAR},
+      flow_num = #{flowNum,jdbcType=VARCHAR},
+      success = #{success,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <update id="truncate">
+    truncate table playback_result
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from playback_result
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAfterId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from playback_result
+    where id <![CDATA[ >= ]]> #{id,jdbcType=INTEGER} and success = 1
+  </select>
+</mapper>

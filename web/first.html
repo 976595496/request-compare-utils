@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="./element-ui.css">
+    <!-- 引入组件库 -->
+    <script src="./vue.js"></script>
+    <script src="./element-ui.js"></script>
+    <script src="./axios.min.js"></script>
+
+    <style>
+        .header {
+            text-align: center;
+            background-color: cadetblue;
+            line-height: 50px;
+        }
+    </style>
+</head>
+
+<body style="padding: 0;margin:0">
+    <div id="app">
+        <div class="header">中银交易比对中心</div>
+        <el-row :gutter="20">
+            <el-col :span="6">
+                <div class="grid-content bg-purple" style="height: 600px; background-color: rgb(84, 92, 100);;">
+                    <el-menu default-active="1" class="el-menu-vertical-demo" background-color="#545c64"
+                        text-color="#fff" active-text-color="#ffd04b" @select="selectChange">
+                        <el-menu-item index="1">
+                            <i class="el-icon-menu"></i>
+                            <span slot="title">交易录入</span>
+                        </el-menu-item>
+                        <el-menu-item index="2">
+                            <i class="el-icon-document"></i>
+                            <span slot="title">交易回放</span>
+                        </el-menu-item>
+                        <el-menu-item index="3">
+                            <i class="el-icon-setting"></i>
+                            <span slot="title">结果比对</span>
+                        </el-menu-item>
+                        <el-menu-item index="4">
+                            <i class="el-icon-setting"></i>
+                            <span slot="title" v-on:click="getSetting">系统设置</span>
+                        </el-menu-item>
+                    </el-menu>
+                </div>
+            </el-col>
+            <el-col :span="18">
+                <div class="grid-content bg-purple-light" v-if="pd==1">
+                    <div style="text-align: center;padding: 10px;">
+                        <!-- <el-upload
+                            class="upload-demo"
+                            action="http://localhost:8888/upload/file"
+                            :on-change="handleChange"
+                            :file-list="fileList">
+                            <el-button size="small" type="primary">点击上传</el-button>
+                        </el-upload> -->
+
+
+
+                        <el-upload action class="upload-demo fl ml20 mb30" :show-file-list="false" :auto-upload="false"
+                            :on-change="handleChange">
+                            <!-- 
+				:data="typeData"
+				:action="importUrl"
+				:before-upload="beforeUpload"
+				 -->
+                            <!-- <el-button size="small" type="primary" >点击上传</el-button> -->
+                            <el-button type="primary" plain >文件上传解析</el-button>
+                        </el-upload>
+                    </div>
+                    <div
+                        style="font-size: 20px;padding: 15px 0;border-top: 1px solid #ccc;border-bottom: 1px solid #ccc;">
+                        <el-row :gutter="20">
+                            <el-col :span="8">
+                                解析总数：{{inputTotal}}
+                            </el-col>
+                            <el-col :span="8">
+                                成功数：{{inputSuccessCount}}
+                            </el-col>
+                            <el-col :span="8">
+                                失败数：{{inputFailureCount}}
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <div>
+                        <el-table :data="tableData1" style="width: 100%">
+                            <el-table-column prop="lineNum" label="文件中行号">
+                            </el-table-column>
+                            <el-table-column prop="flowInfo" label="流水内容">
+                            </el-table-column>
+                            <el-table-column prop="cause" label="失败原因">
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                </div>
+                <div class="grid-content bg-purple-light" v-if="pd==2">
+                    <div style="text-align: center;padding: 10px;">
+                        <el-button type="primary" v-on:click="playback" plain>交易回放</el-button>
+                    </div>
+                    <div
+                        style="font-size: 20px;padding: 15px 0;border-top: 1px solid #ccc;border-bottom: 1px solid #ccc;">
+                        <el-row :gutter="20">
+                            <el-col :span="8">
+                                处理交易总数：{{businessCount}}
+                            </el-col>
+                            <el-col :span="8">
+                                成功数：{{successCount}}
+                            </el-col>
+                            <el-col :span="8">
+                                失败数：{{failureCount}}
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <div>
+                        <el-table :data="tableData2" style="width: 100%">
+                            <el-table-column prop="flowNum" label="流水号">
+                            </el-table-column>
+                            <el-table-column prop="source" label="请求来源">
+                            </el-table-column>
+                            <el-table-column prop="path" label="请求路径">
+                            </el-table-column>
+                            <el-table-column prop="requestMsg" label="请求报文">
+                            </el-table-column>
+                            <el-table-column prop="responseMsg" label="响应信息">
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                </div>
+                <div class="grid-content bg-purple-light" v-if="pd==3">
+                    <div style="text-align: center;padding: 10px;">
+                        <el-button type="primary"  v-on:click="compare" plain>结果比对</el-button>
+                    </div>
+                    <div
+                        style="font-size: 20px;padding: 15px 0;border-top: 1px solid #ccc;border-bottom: 1px solid #ccc;">
+                        <el-row :gutter="20">
+                            <el-col :span="12">
+                                差异记录数：{{diffCount}}
+                            </el-col>
+                            <el-col :span="12">
+                                失败记录数：{{errorCount}}
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <div>
+                        <el-tabs v-model="activeName" @tab-click="handleClick">
+                            <el-tab-pane label="查看差异记录" name="first">
+                                <el-table :data="tableData3" style="width: 100%">
+                                    <el-table-column prop="transName" label="交易名">
+                                    </el-table-column>
+                                    <el-table-column prop="flowNum" label="流水号">
+                                    </el-table-column>
+                                    <el-table-column prop="newKey" label="新一代记录键">
+                                    </el-table-column>
+                                    <el-table-column prop="newValue" label="新一代记录值">
+                                    </el-table-column>
+                                    <el-table-column prop="oldKey" label="老系统记录键">
+                                    </el-table-column>
+                                    <el-table-column prop="oldValue" label="老系统记录值">
+                                    </el-table-column>
+                                </el-table>
+                            </el-tab-pane>
+                            <el-tab-pane label="查看失败记录" name="second">
+                                <el-table :data="tableData3" style="width: 100%">
+                                    <el-table-column prop="transName" label="交易名">
+                                    </el-table-column>
+                                    <el-table-column prop="flowNum" label="流水号">
+                                    </el-table-column>
+                                    <el-table-column prop="newResponse" label="新一代相应内容">
+                                    </el-table-column>
+                                    <el-table-column prop="oldResponse" label="老系统相应内容">
+                                    </el-table-column>
+                                    <el-table-column prop="errorMsg" label="失败原因">
+                                    </el-table-column>
+                                </el-table>
+                            </el-tab-pane>
+                        </el-tabs>
+
+                    </div>
+                </div>
+                <div class="grid-content bg-purple-light" v-if="pd==4">
+                    <div>
+                        <el-tabs v-model="activeName" @tab-click="handleClick">
+                            <el-tab-pane label="API设置" name="first">
+                                <div class="demo-input-suffix" style="margin-bottom: 20px;">
+                                    新一代API：
+                                    <el-input
+                                      placeholder="host:port格式"
+                                      style="width: 200px;"
+                                      v-model="newApi">
+                                    </el-input>
+                                    老系统API：
+                                    <el-input
+                                      placeholder="127.0.0.1:8080"
+                                      style="width: 200px;"
+                                      v-model="oldApi">
+                                    </el-input>
+                                  </div>
+                                  <div class="demo-input-suffix">
+                                    新一代公共参数：
+                                    <el-input
+                                      placeholder="json格式公共参数"
+                                      style="width: 200px;"
+                                      v-model="newPubParams">
+                                    </el-input>
+                                    老系统公共参数：
+                                    <el-input
+                                      placeholder="json格式公共参数"
+                                      style="width: 200px;"
+                                      v-model="oldPubParams">
+                                    </el-input>
+                                    <p>
+                                    不参与比对交易名：
+                                    <el-input
+                                        type="textarea"
+                                        :rows="2"
+                                        placeholder="以','分割的交易名'"
+                                        v-model="noTransName">
+                                    </el-input>
+                                    
+                                    <div style="text-align: center;padding: 10px;">
+                                        <el-button type="primary" v-on:click="setting" plain>设置</el-button>
+                                    </div>
+                                  </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="数据清空" name="second">
+                                <el-row>
+                                    <el-col :span="12" style="text-align: center;">
+                                        <el-button type="primary" plain v-on:click="clearData(1)">清空流水信息</el-button>
+                                    </el-col>
+                                    <el-col :span="12" style="text-align: center;">
+                                        <el-button type="primary" plain v-on:click="clearData(2)">清空回收信息</el-button>
+                                    </el-col>
+                                </el-row>
+                            </el-tab-pane>
+                        </el-tabs>
+
+                    </div>
+                </div>
+            </el-col>
+        </el-row>
+    </div>
+</body>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            server:'http://localhost:8888',
+            pd: '1',
+            tableData1: [],
+            inputTotal:0,
+            inputSuccessCount:0, 
+            inputFailureCount:0,
+            tableData2: [],
+            businessCount:1,
+            successCount:1,
+            failureCount:0,
+            tableData3: [],
+            diffCount:0,
+            errorCount:0,
+            activeName: 'first',
+            newApi:'',
+            newPubParams:'',
+            oldApi:'',
+            oldPubParams:'',
+            noTransName:''
+        },
+        methods: {
+            selectChange(index, indexPath) {
+                this.pd = index
+                console.log(index)
+            },
+            handleClick(){
+
+            },
+            handleExceed(){
+
+            },
+            uploadSuccess(response, file, fileList){
+                debugger;
+            },
+            
+            handleChange(file, fileList) {
+
+                let  that=  this;
+                let uploadData = new FormData();
+                uploadData.append("file", file.raw);
+                uploadData.append("type", "");
+
+                axios({
+                    method: 'post',
+                    url: that.server+'/upload/file',
+                    data:uploadData,
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    })
+                .then(function (response) {
+                    if (response.data.code == 20000){
+                        that.inputTotal = response.data.data.total;
+                        that.inputSuccessCount = response.data.data.successCount;
+                        that.inputFailureCount = response.data.data.failureCount;
+                        that.tableData1 = response.data.data.failureDTOS;
+
+                        that.$message({
+                            message: '文件解析结束',
+                            type: 'success'
+                        });
+                    }else {
+                        that.$message({
+                            message: response.data.message,
+                            type: 'warning'
+                        });
+                    }
+
+                })
+                .catch(function (error) {
+                    that.$message({
+                            message: error,
+                            type: 'error'
+                        });
+                });
+
+
+            },
+            playback(){
+                let  that=  this;
+                axios.post('http://localhost:8888/play/back',{})  
+                .then(function (response) {  
+                    if (response.data.code == 20000){
+                        that.businessCount = response.data.data.businessCount;
+                        that.successCount = response.data.data.successCount;
+                        that.failureCount = response.data.data.failureCount;
+                        that.tableData2 = response.data.data.requestDtos;
+
+                        that.$message({
+                            message: '交易回放结束',
+                            type: 'success'
+                        });
+                    }else {
+                        that.$message({
+                            message: response.data.message,
+                            type: 'warning'
+                        });
+                    }
+
+                })  
+                .catch(function (error) {  
+                    that.$message({
+                            message: error,
+                            type: 'error'
+                    });
+                });  
+            },
+            compare(){
+                let  that=  this;
+                axios.post('http://localhost:8888/compare',{})  
+                .then(function (response) {  
+                    if (response.data.code == 20000){
+                        that.diffCount = response.data.data.diffCount;
+                        that.errorCount = response.data.data.errorCount;
+                        that.tableData3 = response.data.data.compareDiffs;
+                        let str = '响应结果比对结束';
+                        if (that.tableData3.length <=0) {
+                            str =  str + ' 无差异记录';
+                        }
+                        that.$message({
+                            message: str,
+                            type: 'success'
+                        });
+                    }else {
+                        that.$message({
+                            message: response.data.message,
+                            type: 'warning'
+                        });
+                    }
+                })  
+                .catch(function (error) {  
+                    
+                    that.$message({
+                            message: error,
+                            type: 'error'
+                        }); 
+                });  
+            },
+            setting(){
+                let  that=  this;
+                axios.post('http://localhost:8888/settings',{
+                    newApi:that.newApi,
+                    newPubParams:that.newPubParams,
+                    oldApi:that.oldApi,
+                    oldPubParams:that.oldPubParams,
+                    noTransName: that.noTransName
+                })  
+                .then(function (response) {  
+                    if (response.data.code == 20000){
+                        that.$message({
+                            message: '设置 api 成功',
+                            type: 'success'
+                        });
+                    }else {
+                        that.$message({
+                            message: response.data.message,
+                            type: 'warning'
+                        });
+                    }
+                })  
+                .catch(function (error) {  
+                    that.$message({
+                        message: error,
+                        type: 'error'
+                    }); 
+                });  
+            },
+            getSetting(){
+                let  that=  this;
+                axios.get('http://localhost:8888/get/settings',{})  
+                .then(function (response) {  
+
+                    if (response.data.code == 20000){
+                        that.newApi = response.data.data.newApi;
+                        that.newPubParams = response.data.data.newPubParams;
+                        that.oldApi = response.data.data.oldApi;
+                        that.oldPubParams = response.data.data.oldPubParams;
+                        that.noTransName = response.data.data.noTransName;
+
+                    }else {
+                        that.$message({
+                            message: response.data.message,
+                            type: 'warning'
+                        });
+                    }
+
+                })  
+                .catch(function (error) {  
+                    that.$message({
+                        message: error,
+                        type: 'error'
+                    });  
+                });  
+            },
+            clearData(type){
+                
+                let  that=  this;
+                let url = "http://localhost:8888/settings/clear/" + type;
+                axios.post(url,{})  
+                .then(function (response) {  
+                    if (response.data.code == 20000){
+                        that.$message({
+                            message: '清除数据成功',
+                            type: 'success'
+                        });
+                    }else {
+                        that.$message({
+                            message: response.data.message,
+                            type: 'warning'
+                        });
+                    }
+                })  
+                .catch(function (error) {  
+                    that.$message({
+                        message: error,
+                        type: 'error'
+                    });  
+                }); 
+            }
+        
+        },
+    })
+</script>
+
+</html>
+
+
+

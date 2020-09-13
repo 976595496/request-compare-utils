@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sunline.compare.dao.UnifyRequestAnalysisMapper">
+  <resultMap id="BaseResultMap" type="cn.sunline.compare.entity.UnifyRequestAnalysis">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="trans_name" jdbcType="VARCHAR" property="transName" />
+    <result column="flow_num" jdbcType="VARCHAR" property="flowNum" />
+    <result column="protocol" jdbcType="VARCHAR" property="protocol" />
+    <result column="new_host" jdbcType="VARCHAR" property="newHost" />
+    <result column="new_port" jdbcType="VARCHAR" property="newPort" />
+    <result column="old_host" jdbcType="VARCHAR" property="oldHost" />
+    <result column="old_port" jdbcType="VARCHAR" property="oldPort" />
+    <result column="path" jdbcType="VARCHAR" property="path" />
+    <result column="method" jdbcType="VARCHAR" property="method" />
+    <result column="headers" jdbcType="LONGVARCHAR" property="headers" />
+    <result column="body" jdbcType="LONGVARCHAR" property="body" />
+    <result column="response" jdbcType="LONGVARCHAR" property="response" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, trans_name, flow_num, protocol, new_host, new_port, old_host, old_port, path, method,headers, body, response
+  </sql>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from unify_Request_analysis
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.sunline.compare.entity.UnifyRequestAnalysis">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into unify_Request_analysis (trans_name, flow_num, protocol, 
+      new_host, new_port, old_host, 
+      old_port, path,
+      method, headers, body, response
+      )
+    values (#{transName,jdbcType=VARCHAR}, #{flowNum,jdbcType=VARCHAR}, #{protocol,jdbcType=VARCHAR}, 
+      #{newHost,jdbcType=VARCHAR}, #{newPort,jdbcType=VARCHAR}, #{oldHost,jdbcType=VARCHAR}, 
+      #{oldPort,jdbcType=VARCHAR}, #{path,jdbcType=VARCHAR},
+      #{method,jdbcType=VARCHAR}, #{headers,jdbcType=LONGVARCHAR}, #{body,jdbcType=LONGVARCHAR}, #{response, jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.sunline.compare.entity.UnifyRequestAnalysis">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into unify_Request_analysis
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="transName != null">
+        trans_name,
+      </if>
+      <if test="flowNum != null">
+        flow_num,
+      </if>
+      <if test="protocol != null">
+        protocol,
+      </if>
+      <if test="newHost != null">
+        new_host,
+      </if>
+      <if test="newPort != null">
+        new_port,
+      </if>
+      <if test="oldHost != null">
+        old_host,
+      </if>
+      <if test="oldPort != null">
+        old_port,
+      </if>
+      <if test="path != null">
+        path,
+      </if>
+      <if test="method != null">
+        method,
+      </if>
+      <if test="headers != null">
+        headers,
+      </if>
+      <if test="body != null">
+        body,
+      </if>
+      <if test="response != null">
+        response,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="transName != null">
+        #{transName,jdbcType=VARCHAR},
+      </if>
+      <if test="flowNum != null">
+        #{flowNum,jdbcType=VARCHAR},
+      </if>
+      <if test="protocol != null">
+        #{protocol,jdbcType=VARCHAR},
+      </if>
+      <if test="newHost != null">
+        #{newHost,jdbcType=VARCHAR},
+      </if>
+      <if test="newPort != null">
+        #{newPort,jdbcType=VARCHAR},
+      </if>
+      <if test="oldHost != null">
+        #{oldHost,jdbcType=VARCHAR},
+      </if>
+      <if test="oldPort != null">
+        #{oldPort,jdbcType=VARCHAR},
+      </if>
+      <if test="path != null">
+        #{path,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="headers != null">
+        #{headers,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="body != null">
+        #{body,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="response != null">
+        #{response,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <insert id="insertBatch">
+    insert into unify_Request_analysis (trans_name, flow_num, protocol,
+      new_host, new_port, old_host,
+      old_port, path,
+      method, headers, body, response
+      )
+    values
+    <foreach collection="dtos" separator="," index="index" item="dto">
+      (#{dto.transName,jdbcType=VARCHAR}, #{dto.flowNum,jdbcType=VARCHAR}, #{dto.protocol,jdbcType=VARCHAR},
+        #{dto.newHost,jdbcType=VARCHAR}, #{dto.newPort,jdbcType=VARCHAR}, #{dto.oldHost,jdbcType=VARCHAR},
+        #{dto.oldPort,jdbcType=VARCHAR}, #{dto.path,jdbcType=VARCHAR},
+        #{dto.method,jdbcType=VARCHAR}, #{dto.headers,jdbcType=LONGVARCHAR}, #{dto.body,jdbcType=LONGVARCHAR}, #{dto.response,jdbcType=LONGVARCHAR}
+        )
+    </foreach>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.sunline.compare.entity.UnifyRequestAnalysis">
+    update unify_Request_analysis
+    <set>
+      <if test="transName != null">
+        trans_name = #{transName,jdbcType=VARCHAR},
+      </if>
+      <if test="flowNum != null">
+        flow_num = #{flowNum,jdbcType=VARCHAR},
+      </if>
+      <if test="protocol != null">
+        protocol = #{protocol,jdbcType=VARCHAR},
+      </if>
+      <if test="newHost != null">
+        new_host = #{newHost,jdbcType=VARCHAR},
+      </if>
+      <if test="newPort != null">
+        new_port = #{newPort,jdbcType=VARCHAR},
+      </if>
+      <if test="oldHost != null">
+        old_host = #{oldHost,jdbcType=VARCHAR},
+      </if>
+      <if test="oldPort != null">
+        old_port = #{oldPort,jdbcType=VARCHAR},
+      </if>
+      <if test="path != null">
+        path = #{path,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        method = #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="headers != null">
+        headers = #{headers,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="body != null">
+        body = #{body,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="response != null">
+        response = #{response,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="cn.sunline.compare.entity.UnifyRequestAnalysis">
+    update unify_Request_analysis
+    set trans_name = #{transName,jdbcType=VARCHAR},
+      flow_num = #{flowNum,jdbcType=VARCHAR},
+      protocol = #{protocol,jdbcType=VARCHAR},
+      new_host = #{newHost,jdbcType=VARCHAR},
+      new_port = #{newPort,jdbcType=VARCHAR},
+      old_host = #{oldHost,jdbcType=VARCHAR},
+      old_port = #{oldPort,jdbcType=VARCHAR},
+      path = #{path,jdbcType=VARCHAR},
+      method = #{method,jdbcType=VARCHAR},
+      headers = #{headers,jdbcType=LONGVARCHAR},
+      body = #{body,jdbcType=LONGVARCHAR},
+      response = #{response,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.sunline.compare.entity.UnifyRequestAnalysis">
+    update unify_Request_analysis
+    set trans_name = #{transName,jdbcType=VARCHAR},
+      flow_num = #{flowNum,jdbcType=VARCHAR},
+      protocol = #{protocol,jdbcType=VARCHAR},
+      new_host = #{newHost,jdbcType=VARCHAR},
+      new_port = #{newPort,jdbcType=VARCHAR},
+      old_host = #{oldHost,jdbcType=VARCHAR},
+      old_port = #{oldPort,jdbcType=VARCHAR},
+      path = #{path,jdbcType=VARCHAR},
+      method = #{method,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <update id="truncate">
+      truncate table unify_Request_analysis
+    </update>
+
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from unify_Request_analysis
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAfterId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from unify_Request_analysis
+    where id <![CDATA[ >= ]]> #{id,jdbcType=INTEGER}
+  </select>
+</mapper>
